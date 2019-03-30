@@ -2,7 +2,7 @@
 # StrongSwan VPN + Alpine Linux
 #
 
-FROM alpine:latest
+FROM alpine:3.7
 
 ENV STRONGSWAN_RELEASE https://download.strongswan.org/strongswan.tar.bz2
 
@@ -58,6 +58,20 @@ RUN apk --update add build-base \
     rm -rf /tmp/* && \
     apk del build-base curl-dev openssl-dev && \
     rm -rf /var/cache/apk/*
+RUN rm /etc/ipsec.secrets
+
+ADD ./etc/* /etc/
+ADD ./bin/* /usr/bin/
+
+ARG LEFT_ID
+ARG VPN_USER
+ARG DNS_1
+ARG DNS_2
+
+ENV ENV_LEFT_ID ${LEFT_ID:-example.host.com}
+ENV ENV_VPN_USER ${VPN_USER:-vpnuser}
+ENV ENV_DNS_1 ${DNS_1:-1.1.1.1}
+ENV ENV_DNS_2 ${DNS_2:-1.0.0.1}
 
 EXPOSE 500/udp \
        4500/udp
